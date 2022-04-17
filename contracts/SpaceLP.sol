@@ -38,8 +38,7 @@ contract SpaceLP is ERC20 {
         require(amountEthIn > 0, "insufficient input amount");
 
         spceAmountOut = getAmountOut(amountEthIn, ethReserve, spceReserve); // eth in, spce out
-
-        IERC20(spaceToken).transfer(_to, spceAmountOut);
+        require(IERC20(spaceToken).transfer(_to, spceAmountOut), "failed to transfer spce");
 
         // sync reserves
         sync();
@@ -99,7 +98,7 @@ contract SpaceLP is ERC20 {
         _burn(address(this), lpTokensToBurn);
 
         // send back eth and spce
-        IERC20(spaceToken).transfer(_to, spceRefund);
+        require(IERC20(spaceToken).transfer(_to, spceRefund), "failed to transfer spce");
         (bool success, ) = payable(_to).call{value: ethRefund}("");
         require(success, "failed to send eth");
 
